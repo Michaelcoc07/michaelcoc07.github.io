@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Command Line Challenge</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Command Line Challenge</h1>
+            <p>Progress through levels to enhance your skills!</p>
+        </header>
+
+        <section id="levels">
+            <!-- Level 0 -->
+            <div class="level" id="level0">
+                <h2>Level 0</h2>
+                <p>Usename: Level0 </br></br> Password: Level0 </br></br> Login using ssh to find the next level's password</p>
+                <input type="text" id="input0" placeholder="Enter password for Next level">
+                <button onclick="checkAnswer(1)">Submit</button>
+                <p class="feedback" id="feedback0"></p>
+            </div>
+            <!-- Level 1 -->
+            <div class="level" id="level1" style="display: none;">
+                <h2>Level 1</h2>
+                <p>The password is Hidden somewhere </p>
+                <input type="text" id="input1" placeholder="Enter password for Next level">
+                <button onclick="checkAnswer(2)">Submit</button>
+                <p class="feedback" id="feedback1"></p>
+            </div>
+            <!-- Level 2 -->
+            <div class="level" id="level2" style="display: none;">
+                <h2>Level 2</h2>
+                <p>Have you heard of ceaser cipher</p>
+                <input type="text" id="input2" placeholder="Enter password for Next level">
+                <button onclick="checkAnswer(3)">Submit</button>
+                <p class="feedback" id="feedback2"></p>
+            </div>
+            <!-- Level 3 -->
+            <div class="level" id="level3" style="display: none;">
+                <h2>Level 3</h2>
+                <p>Have you heard of ceaser cipher</p>
+                <input type="text" id="input2" placeholder="Enter password for Next level">
+                <button onclick="checkAnswer(3)">Submit</button>
+                <p class="feedback" id="feedback3"></p>
+            </div>
+            <!-- More levels can be added similarly -->
+        </section>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+

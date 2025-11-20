@@ -1,141 +1,682 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Christ Michael Jeniston S | Portfolio</title>
-  <style>
-    body {
-      margin: 0;
-      font-family: 'Poppins', sans-serif;
-      background: #0f172a;
-      color: #e2e8f0;
-    }
-    header {
-      background: #1e293b;
-      padding: 2rem;
-      text-align: center;
-    }
-    header h1 {
-      margin: 0;
-      font-size: 2.5rem;
-    }
-    header p {
-      margin-top: 0.5rem;
-      font-size: 1.2rem;
-      color: #94a3b8;
-    }
-    nav {
-      background: #334155;
-      padding: 1rem;
-      text-align: center;
-    }
-    nav a {
-      color: #cbd5e1;
-      text-decoration: none;
-      margin: 0 1rem;
-      font-weight: bold;
-    }
-    nav a:hover {
-      color: #38bdf8;
-    }
-    section {
-      padding: 4rem 2rem;
-      max-width: 800px;
-      margin: auto;
-    }
-    .projects, .skills {
-      display: grid;
-      gap: 2rem;
-    }
-    .project, .skill {
-      background: #1e293b;
-      padding: 2rem;
-      border-radius: 12px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-    }
-    footer {
-      text-align: center;
-      padding: 2rem;
-      background: #1e293b;
-      color: #94a3b8;
-      margin-top: 4rem;
-    }
-    @media (max-width: 600px) {
-      nav {
-        display: flex;
-        flex-direction: column;
-        gap: 0.5rem;
-      }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Christ Michael Jeniston S | Cyber Security Command Center</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <style>
+        :root {
+            --primary: #00f3ff;
+            --secondary: #ff0055;
+            --bg: #020204;
+            --glass: rgba(0, 243, 255, 0.05);
+            --border: rgba(0, 243, 255, 0.4);
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; cursor: crosshair; }
+
+        body {
+            background: var(--bg);
+            color: #fff;
+            font-family: 'Share Tech Mono', monospace;
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* --- CRT SCANLINE EFFECT --- */
+        .scanlines {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 6px 100%;
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0.6;
+        }
+        
+        /* --- BOOT SCREEN --- */
+        #boot-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: #000;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            padding: 50px;
+            font-family: 'Share Tech Mono', monospace;
+            color: var(--primary);
+            font-size: 14px;
+        }
+        .boot-text { margin-bottom: 5px; opacity: 0; animation: fadeIn 0.1s forwards; }
+        @keyframes fadeIn { to { opacity: 1; } }
+
+        /* --- BACKGROUNDS --- */
+        #matrix-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            z-index: 0;
+            opacity: 0.15;
+        }
+        #three-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            z-index: 1;
+        }
+
+        /* --- UI LAYOUT --- */
+        #ui-layer {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            height: 100%;
+            display: grid;
+            grid-template-columns: 100px 1fr;
+            opacity: 0; /* Hidden until boot finishes */
+            transition: opacity 1s;
+        }
+
+        /* --- SIDEBAR NAV --- */
+        nav {
+            background: rgba(0,0,0,0.6);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding-top: 100px;
+            gap: 30px;
+            backdrop-filter: blur(4px);
+        }
+
+        .nav-btn {
+            width: 60px; height: 60px;
+            border: 1px solid var(--border);
+            color: var(--primary);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.5rem;
+            transition: 0.3s;
+            position: relative;
+            background: rgba(0,0,0,0.5);
+            clip-path: polygon(10% 0, 100% 0, 100% 90%, 90% 100%, 0 100%, 0 10%);
+        }
+
+        .nav-btn:hover, .nav-btn.active {
+            background: var(--primary);
+            color: #000;
+            box-shadow: 0 0 20px var(--primary);
+            transform: scale(1.1);
+        }
+
+        .nav-btn::before {
+            content: attr(data-label);
+            position: absolute;
+            left: 70px;
+            background: var(--primary);
+            color: #000;
+            padding: 5px 10px;
+            font-size: 12px;
+            font-weight: bold;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.2s;
+            white-space: nowrap;
+        }
+        .nav-btn:hover::before { opacity: 1; left: 80px; }
+
+        /* --- MAIN CONTENT --- */
+        main {
+            position: relative;
+            padding: 40px;
+            perspective: 1000px;
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
+            margin-bottom: 40px;
+        }
+
+        .brand h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+        }
+        
+        .glitch {
+            position: relative;
+            color: white;
+        }
+        .glitch::before, .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg);
+        }
+        .glitch::before {
+            left: 2px; text-shadow: -1px 0 red; clip: rect(24px, 550px, 90px, 0);
+            animation: glitch-anim 3s infinite linear alternate-reverse;
+        }
+        .glitch::after {
+            left: -2px; text-shadow: -1px 0 blue; clip: rect(85px, 550px, 140px, 0);
+            animation: glitch-anim 2s infinite linear alternate-reverse;
+        }
+        @keyframes glitch-anim {
+            0% { clip: rect(10px, 9999px, 30px, 0); }
+            20% { clip: rect(80px, 9999px, 100px, 0); }
+            40% { clip: rect(30px, 9999px, 10px, 0); }
+            60% { clip: rect(50px, 9999px, 80px, 0); }
+            100% { clip: rect(20px, 9999px, 140px, 0); }
+        }
+
+        .section {
+            position: absolute;
+            top: 120px; left: 40px; right: 40px; bottom: 40px;
+            background: rgba(5, 10, 16, 0.85);
+            border: 1px solid var(--border);
+            padding: 40px;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateX(50px) rotateY(-10deg);
+            transition: 0.5s cubic-bezier(0.23, 1, 0.32, 1);
+            backdrop-filter: blur(10px);
+            display: flex;
+            flex-direction: column;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+        }
+
+        .section.active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateX(0) rotateY(0);
+        }
+
+        /* TYPEWRITER EFFECT */
+        .typewriter h2 {
+            border-right: 2px solid var(--primary);
+            white-space: nowrap;
+            overflow: hidden;
+            animation: caret .75s step-end infinite;
+            display: inline-block;
+            color: var(--primary);
+            font-size: 3rem;
+            font-family: 'Orbitron';
+            margin-bottom: 20px;
+        }
+        @keyframes caret { 50% { border-color: transparent; } }
+
+        /* CARDS */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            overflow-y: auto;
+            padding-right: 10px;
+        }
+        
+        /* Custom Scrollbar */
+        .grid::-webkit-scrollbar { width: 5px; }
+        .grid::-webkit-scrollbar-thumb { background: var(--primary); }
+
+        .card {
+            background: rgba(0,0,0,0.6);
+            border: 1px solid #333;
+            padding: 20px;
+            position: relative;
+            transition: 0.3s;
+            overflow: hidden;
+        }
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; width: 2px; height: 0;
+            background: var(--primary);
+            transition: 0.5s;
+        }
+        .card:hover {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.1);
+        }
+        .card:hover::before { height: 100%; }
+
+        .tag {
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            margin-right: 5px;
+            display: inline-block;
+            margin-top: 5px;
+        }
+
+        /* Project Status Badge */
+        .status {
+            float: right;
+            font-size: 0.7rem;
+            background: var(--secondary);
+            color: #fff;
+            padding: 2px 6px;
+        }
+        .status.deployed { background: var(--primary); color: #000; }
+
+        /* MOBILE ADAPTATION */
+        @media (max-width: 768px) {
+            #ui-layer { grid-template-columns: 1fr; grid-template-rows: 60px 1fr; }
+            nav { 
+                flex-direction: row; 
+                padding-top: 0; 
+                justify-content: space-around; 
+                border-right: none; 
+                border-bottom: 1px solid var(--border);
+            }
+            .nav-btn { width: 40px; height: 40px; font-size: 1rem; }
+            .section { top: 80px; left: 10px; right: 10px; bottom: 10px; padding: 20px; }
+            .typewriter h2 { font-size: 1.5rem; white-space: normal; animation: none; border: none; }
+            header { flex-direction: column; align-items: flex-start; }
+        }
+    </style>
 </head>
 <body>
 
-<header>
-  <h1>Christ Michael Jeniston S</h1>
-  <p>Student | Developer | Future Cybersecurity Expert</p>
-</header>
+    <div class="scanlines"></div>
 
-<nav>
-  <a href="#about">About</a>
-  <a href="#skills">Skills</a>
-  <a href="#projects">Projects</a>
-  <a href="#contact">Contact</a>
-</nav>
+    <!-- BOOT SEQUENCE OVERLAY -->
+    <div id="boot-screen"></div>
 
-<section id="about">
-  <h2>About Me</h2>
-  <p>Hello! I'm Christ Michael Jeniston, a passionate learner in tech, currently pursuing my engineering at Sri Shakthi Institute of Engineering and Technology. I love building projects, exploring cybersecurity, cloud technologies, and creating solutions that can impact the real world.</p>
-</section>
+    <!-- CANVAS LAYERS -->
+    <canvas id="matrix-canvas"></canvas>
+    <div id="three-canvas"></div>
 
-<section id="skills">
-  <h2>Cybersecurity Skills</h2>
-  <div class="skills">
-    <div class="skill">
-      <h3>Network Security</h3>
-      <p>Experienced in analyzing network traffic, detecting intrusions, and building basic NIDS systems.</p>
-    </div>
-    <div class="skill">
-      <h3>Penetration Testing</h3>
-      <p>Skilled at finding vulnerabilities in web applications and servers, using tools like Burp Suite, OWASP ZAP, and manual techniques.</p>
-    </div>
-    <div class="skill">
-      <h3>Reverse Engineering</h3>
-      <p>Knowledge of analyzing binaries, exploiting vulnerabilities, and creating CTF challenges involving MD5 collisions.</p>
-    </div>
-    <div class="skill">
-      <h3>Cloud Security Basics</h3>
-      <p>Understanding security practices in AWS, Azure, and DigitalOcean environments; including IAM, S3, and server hardening.</p>
-    </div>
-    <div class="skill">
-      <h3>Linux Hardening</h3>
-      <p>Experience securing Linux servers by configuring firewalls, disabling unused services, and monitoring logs for suspicious activities.</p>
-    </div>
-  </div>
-</section>
+    <!-- UI LAYER -->
+    <div id="ui-layer">
+        <nav>
+            <div class="nav-btn active" onclick="switchTab('home')" data-label="DASHBOARD"><i class="fas fa-terminal"></i></div>
+            <div class="nav-btn" onclick="switchTab('about')" data-label="IDENTITY"><i class="fas fa-user-secret"></i></div>
+            <div class="nav-btn" onclick="switchTab('skills')" data-label="ARSENAL"><i class="fas fa-code-branch"></i></div>
+            <div class="nav-btn" onclick="switchTab('projects')" data-label="OPERATIONS"><i class="fas fa-network-wired"></i></div>
+            <div class="nav-btn" onclick="switchTab('contact')" data-label="ENCRYPTED COMMS"><i class="fas fa-envelope-open-text"></i></div>
+        </nav>
 
-<section id="projects">
-  <h2>Projects</h2>
-  <div class="projects">
+        <main>
+            <header>
+                <div class="brand">
+                    <h1 class="glitch" data-text="C.M.J // SEC">C.M.J // SEC</h1>
+                </div>
+                <div style="text-align: right; font-size: 0.8rem; color: var(--primary);">
+                    <div>IP: <span id="ip-display">192.168.X.X</span></div>
+                    <div>LOC: COIMBATORE_SECURE_NODE</div>
+                </div>
+            </header>
+
+            <!-- HOME -->
+            <div id="home" class="section active">
+                <div class="typewriter">
+                    <h2 id="type-target"></h2>
+                </div>
+                <p style="font-size: 1.2rem; color: #aaa; max-width: 600px;">
+                    > Initializing security protocols...<br>
+                    > Accessing candidate profile: <strong>Christ Michael Jeniston S</strong><br>
+                    > Status: <span style="color:var(--primary)">Available for Deployment</span>
+                </p>
+                <div style="margin-top: 40px;">
+                    <button onclick="switchTab('projects')" style="background: transparent; border: 1px solid var(--primary); color: var(--primary); padding: 15px 40px; font-family: 'Orbitron'; cursor: pointer; transition: 0.3s; font-size: 1rem;">
+                        RUN DIAGNOSTICS [PROJECTS]
+                    </button>
+                </div>
+            </div>
+
+            <!-- ABOUT -->
+            <div id="about" class="section">
+                <h2 class="glitch" data-text="OPERATOR PROFILE">OPERATOR PROFILE</h2>
+                <div class="grid">
+                    <div style="grid-column: 1 / -1;">
+                        <p>Final Year CSE Student specializing in <strong>Cyber Security</strong> at Sri Eshwar College of Engineering. I operate at the intersection of offensive security and defensive architecture.</p>
+                    </div>
+                    <div class="card">
+                        <h3 style="color:var(--secondary)">CTF OPERATIONS</h3>
+                        <ul>
+                            <li>1st Place: KPR Institute CTF</li>
+                            <li>1st Place: Team NOVA CTF</li>
+                            <li>3rd Place: Tamil CTF</li>
+                        </ul>
+                    </div>
+                    <div class="card">
+                        <h3 style="color:var(--primary)">CERTIFICATIONS</h3>
+                        <p>NPTEL: Cryptography & Network Security</p>
+                        <p>Focus: Protocol Analysis, Encryption Standards</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SKILLS -->
+            <div id="skills" class="section">
+                <h2 class="glitch" data-text="TECHNICAL ARSENAL">TECHNICAL ARSENAL</h2>
+                <div class="grid">
+                    <div class="card">
+                        <h3><i class="fas fa-skull"></i> OFFENSIVE</h3>
+                        <div style="margin-top:10px;">
+                            <span class="tag">Burp Suite</span>
+                            <span class="tag">Metasploit</span>
+                            <span class="tag">Nmap</span>
+                            <span class="tag">SQLi</span>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-shield-alt"></i> DEFENSIVE</h3>
+                        <div style="margin-top:10px;">
+                            <span class="tag">IDS/IPS</span>
+                            <span class="tag">Firewall Config</span>
+                            <span class="tag">Log Analysis</span>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-code"></i> CODE</h3>
+                        <div style="margin-top:10px;">
+                            <span class="tag">Python</span>
+                            <span class="tag">C++</span>
+                            <span class="tag">Java</span>
+                            <span class="tag">Bash</span>
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-search"></i> FORENSICS</h3>
+                        <div style="margin-top:10px;">
+                            <span class="tag">Wireshark</span>
+                            <span class="tag">Ghidra</span>
+                            <span class="tag">Steganography</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PROJECTS -->
+            <div id="projects" class="section">
+                <h2 class="glitch" data-text="MISSION LOG">MISSION LOG</h2>
+                <div class="grid">
+                    <div class="card">
+                        <span class="status deployed">DEPLOYED</span>
+                        <h3>Agentless Vuln Scanner</h3>
+                        <p style="font-size:0.9rem; margin: 10px 0; color:#aaa;">GUI-based security tool for network topology mapping and CVE detection without agent installation.</p>
+                        <div class="tag">Python</div> <div class="tag">PySide6</div> <div class="tag">Nmap</div>
+                    </div>
+                    <div class="card">
+                        <span class="status">COMPLETE</span>
+                        <h3>Hybrid IDS</h3>
+                        <p style="font-size:0.9rem; margin: 10px 0; color:#aaa;">Dual-layer defense system combining signature-based and anomaly-based detection logic.</p>
+                        <div class="tag">Flask</div> <div class="tag">Scapy</div> <div class="tag">ML</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CONTACT -->
+            <div id="contact" class="section">
+                <h2 class="glitch" data-text="SECURE COMMS">SECURE COMMS</h2>
+                <div style="display: flex; flex-direction: column; gap: 20px; max-width: 500px;">
+                    <a href="mailto:christmichaeljeniston@gmail.com" class="card" style="text-decoration:none; color:white; display:flex; align-items:center; gap:20px;">
+                        <i class="fas fa-envelope" style="font-size:2rem; color:var(--primary)"></i>
+                        <div>
+                            <h3 style="margin:0">EMAIL UPLINK</h3>
+                            <small>christmichaeljeniston@gmail.com</small>
+                        </div>
+                    </a>
+                    <a href="https://www.linkedin.com/in/christ-michael-jeniston-s-0667b4293" target="_blank" class="card" style="text-decoration:none; color:white; display:flex; align-items:center; gap:20px;">
+                        <i class="fab fa-linkedin" style="font-size:2rem; color:var(--primary)"></i>
+                        <div>
+                            <h3 style="margin:0">LINKEDIN</h3>
+                            <small>Professional Network</small>
+                        </div>
+                    </a>
+                    <a href="https://github.com/Kira-007" target="_blank" class="card" style="text-decoration:none; color:white; display:flex; align-items:center; gap:20px;">
+                        <i class="fab fa-github" style="font-size:2rem; color:var(--primary)"></i>
+                        <div>
+                            <h3 style="margin:0">GITHUB [Kira-007]</h3>
+                            <small>Source Code Repositories</small>
+                        </div>
+                    </a>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     
-    <div class="project">
-      <h3>Cybersecurity Project</h3>
-      <p>Building a Network Intrusion Detection System (NIDS) to monitor and analyze network traffic for potential security breaches.</p>
-    </div>
-   
-  </div>
-</section>
+    <script>
+        // --- 1. BOOT SEQUENCE ---
+        const bootScreen = document.getElementById('boot-screen');
+        const bootLines = [
+            "Initializing Kernel...",
+            "Loading Security Modules...",
+            "Mounting File System...",
+            "Connecting to Secure Server...",
+            "Decrypting User Profile...",
+            "ACCESS GRANTED"
+        ];
 
-<section id="contact">
-  <h2>Contact</h2>
-  <p>Email: <strong>christmichaeljeniston@gmail.com</strong></p>
-  <p>LinkedIn: <a href="https://linkedin.com/in/christ-michael-jeniston-s-0667b4293/" target="_blank">Christ Michael Jeniston S</a></p>
-</section>
+        let lineIndex = 0;
+        function runBoot() {
+            if (lineIndex < bootLines.length) {
+                const p = document.createElement('div');
+                p.className = 'boot-text';
+                p.innerText = `> ${bootLines[lineIndex]}`;
+                bootScreen.appendChild(p);
+                lineIndex++;
+                setTimeout(runBoot, 300); // Delay between lines
+            } else {
+                setTimeout(() => {
+                    bootScreen.style.opacity = '0';
+                    setTimeout(() => {
+                        bootScreen.style.display = 'none';
+                        document.getElementById('ui-layer').style.opacity = '1';
+                        typeWriterEffect();
+                    }, 500);
+                }, 800);
+            }
+        }
+        window.onload = runBoot;
 
-<footer>
-  <p>&copy; 2025 Christ Michael Jeniston S. All rights reserved.</p>
-</footer>
+        // --- 2. TYPEWRITER EFFECT ---
+        const textToType = "CHRIST MICHAEL JENISTON S";
+        const typeTarget = document.getElementById('type-target');
+        let charIndex = 0;
 
+        function typeWriterEffect() {
+            if (charIndex < textToType.length) {
+                typeTarget.innerHTML += textToType.charAt(charIndex);
+                charIndex++;
+                setTimeout(typeWriterEffect, 100);
+            }
+        }
+
+        // --- 3. UI TABS ---
+        function switchTab(id) {
+            document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            
+            document.getElementById(id).classList.add('active');
+            // Find button with matching onclick
+            const btns = document.querySelectorAll('.nav-btn');
+            if(id === 'home') btns[0].classList.add('active');
+            if(id === 'about') btns[1].classList.add('active');
+            if(id === 'skills') btns[2].classList.add('active');
+            if(id === 'projects') btns[3].classList.add('active');
+            if(id === 'contact') btns[4].classList.add('active');
+        }
+
+        // --- 4. MATRIX RAIN CANVAS ---
+        const matrixCanvas = document.getElementById('matrix-canvas');
+        const mCtx = matrixCanvas.getContext('2d');
+
+        matrixCanvas.width = window.innerWidth;
+        matrixCanvas.height = window.innerHeight;
+
+        const katakana = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレゲゼデベペオォコソトノホモヨョロヲゴゾドボポvn';
+        const latin = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        const nums = '01';
+        const alphabet = katakana + latin + nums;
+
+        const fontSize = 16;
+        const columns = matrixCanvas.width / fontSize;
+        const rainDrops = [];
+
+        for( let x = 0; x < columns; x++ ) {
+            rainDrops[x] = 1;
+        }
+
+        function drawMatrix() {
+            mCtx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            mCtx.fillRect(0, 0, matrixCanvas.width, matrixCanvas.height);
+
+            mCtx.fillStyle = '#0F0'; // Green text
+            mCtx.font = fontSize + 'px monospace';
+
+            for(let i = 0; i < rainDrops.length; i++) {
+                const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+                mCtx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+
+                if(rainDrops[i] * fontSize > matrixCanvas.height && Math.random() > 0.975){
+                    rainDrops[i] = 0;
+                }
+                rainDrops[i]++;
+            }
+        }
+        setInterval(drawMatrix, 30);
+
+
+        // --- 5. THREE.JS SCENE (GLOWING CORE) ---
+        const scene = new THREE.Scene();
+        // No background color, let transparency show Matrix
+        
+        const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+        camera.position.z = 18;
+
+        const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
+        renderer.setSize(window.innerWidth, window.innerHeight);
+        document.getElementById('three-canvas').appendChild(renderer.domElement);
+
+        // Create Glowing Particle Texture
+        function getSprite() {
+            const canvas = document.createElement('canvas');
+            canvas.width = 32; canvas.height = 32;
+            const context = canvas.getContext('2d');
+            const gradient = context.createRadialGradient(16, 16, 0, 16, 16, 16);
+            gradient.addColorStop(0, 'rgba(255, 255, 255, 1)');
+            gradient.addColorStop(0.2, 'rgba(0, 243, 255, 1)');
+            gradient.addColorStop(0.4, 'rgba(0, 0, 64, 1)');
+            gradient.addColorStop(1, 'rgba(0, 0, 0, 0)');
+            context.fillStyle = gradient;
+            context.fillRect(0, 0, 32, 32);
+            const texture = new THREE.Texture(canvas);
+            texture.needsUpdate = true;
+            return texture;
+        }
+
+        // Main Sphere of Particles
+        const geometry = new THREE.BufferGeometry();
+        const count = 2000;
+        const positions = new Float32Array(count * 3);
+        
+        for(let i = 0; i < count * 3; i++) {
+            positions[i] = (Math.random() - 0.5) * 25;
+        }
+        
+        geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const material = new THREE.PointsMaterial({
+            size: 0.5,
+            map: getSprite(),
+            transparent: true,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false,
+            color: 0x00f3ff
+        });
+        
+        const particles = new THREE.Points(geometry, material);
+        scene.add(particles);
+
+        // Inner Core (Icosahedron)
+        const coreGeo = new THREE.IcosahedronGeometry(4, 1);
+        const coreMat = new THREE.MeshBasicMaterial({ 
+            color: 0x00f3ff, 
+            wireframe: true, 
+            transparent: true, 
+            opacity: 0.3 
+        });
+        const core = new THREE.Mesh(coreGeo, coreMat);
+        scene.add(core);
+
+        // Orbiting Rings
+        const ringGeo = new THREE.TorusGeometry(10, 0.1, 16, 100);
+        const ringMat = new THREE.MeshBasicMaterial({ color: 0xff0055, transparent: true, opacity: 0.5 });
+        const ring1 = new THREE.Mesh(ringGeo, ringMat);
+        const ring2 = new THREE.Mesh(ringGeo, ringMat);
+        const ring3 = new THREE.Mesh(ringGeo, ringMat);
+        
+        ring1.rotation.x = Math.PI / 2;
+        ring2.rotation.x = Math.PI / 2;
+        ring2.rotation.y = Math.PI / 3;
+        ring3.rotation.x = Math.PI / 2;
+        ring3.rotation.y = -Math.PI / 3;
+
+        scene.add(ring1);
+        scene.add(ring2);
+        scene.add(ring3);
+
+        // Animation Loop
+        let mouseX = 0;
+        let mouseY = 0;
+        
+        document.addEventListener('mousemove', (e) => {
+            mouseX = (e.clientX - window.innerWidth / 2) * 0.001;
+            mouseY = (e.clientY - window.innerHeight / 2) * 0.001;
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            const time = Date.now() * 0.0005;
+
+            // Rotate Particles
+            particles.rotation.y = time * 0.2;
+            particles.rotation.x = mouseY * 2;
+            particles.rotation.y += mouseX * 2;
+
+            // Pulse Core
+            const scale = 1 + Math.sin(time * 5) * 0.05;
+            core.scale.set(scale, scale, scale);
+            core.rotation.y -= 0.01;
+            core.rotation.x -= 0.01;
+
+            // Rotate Rings Gyroscope style
+            ring1.rotation.z += 0.01;
+            ring2.rotation.z -= 0.015;
+            ring3.rotation.z += 0.005;
+
+            // Dynamic color shift for particles
+            // material.color.setHSL(Math.sin(time * 0.1), 1, 0.5);
+
+            renderer.render(scene, camera);
+        }
+        animate();
+
+        // Resize Handler
+        window.addEventListener('resize', () => {
+            camera.aspect = window.innerWidth / window.innerHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            matrixCanvas.width = window.innerWidth;
+            matrixCanvas.height = window.innerHeight;
+        });
+
+    </script>
 </body>
 </html>
